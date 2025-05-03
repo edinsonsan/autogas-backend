@@ -17,6 +17,7 @@ export class RegisterAuthDto {
     @IsNotEmpty({ message: 'El apellido es obligatorio' })
     lastname: string;
 
+    @IsString()
     @IsEmail({}, { message: 'Correo electrónico inválido' })
     @IsNotEmpty({ message: 'El correo electrónico es obligatorio' })
     email: string;

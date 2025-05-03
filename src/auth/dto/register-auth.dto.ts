@@ -8,7 +8,7 @@ import {
     Matches,
 } from 'class-validator';
 
-export class RegisterUserDto {
+export class RegisterAuthDto {
     @IsString()
     @IsNotEmpty({ message: 'El nombre es obligatorio' })
     name: string;

@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { RegisterAuthDto } from './dto/register-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
@@ -10,7 +10,19 @@ export class AuthService {
 
   constructor(@InjectRepository(User) private usersRepository: Repository<User>) { }
 
-  register(user: RegisterUserDto) {
+  async register(user: RegisterAuthDto) {
+
+    const emailExist = await this.usersRepository.findOneBy({ email: user.email });
+    if (emailExist) {
+      //409 CONFLICT
+      return new HttpException('El email ya Existe!', HttpStatus.CONFLICT);
+    }
+
+    const phoneExsist = await this.usersRepository.findOneBy({ phone: user.phone });
+    if (phoneExsist) {
+      return new HttpException('El telefono ya Existe!', HttpStatus.CONFLICT);
+    }
+
     const newUser = this.usersRepository.create(user);
     return this.usersRepository.save(newUser);
   }

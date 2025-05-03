@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { bcrypt, hash } from "bcrypt";
 
-@Entity({ name: 'users'})
+@Entity({ name: 'users' })
 export class User {
 
     @PrimaryGeneratedColumn()
@@ -12,25 +13,30 @@ export class User {
     @Column()
     lastname: string;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     email: string;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     phone: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     image: string;
 
     @Column()
     password: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     notificaion_token: string;
 
-    @Column({type: 'datetime', default: () => 'CURRENT_TIMESTAMP'})
+    @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date;
 
-    @Column({type: 'datetime', default: () => 'CURRENT_TIMESTAMP'})
+    @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     updated_at: Date;
+
+    @BeforeInsert()
+    async hastPassword() {
+        this.password = await hash(this.password, Number(process.env.HASH_SALT));
+    }
 
 }

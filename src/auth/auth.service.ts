@@ -32,7 +32,21 @@ export class AuthService {
     }
 
     const newUser = this.usersRepository.create(user);
-    return this.usersRepository.save(newUser);
+    const userSave = await this.usersRepository.save(newUser);
+
+    const payload = { id: userSave.id, name: userSave.name };
+    const token = this.jwtService.sign(payload);
+
+    delete userSave.password;
+
+    const data = {
+      user: userSave,
+      token: 'Bearer ' + token,
+
+    }
+
+    return data;
+
   }
 
   async login(loginData: LoginAuthDto) {
@@ -49,9 +63,12 @@ export class AuthService {
 
     const payload = { id: userFound.id, name: userFound.name };
     const token = this.jwtService.sign(payload);
+
+    delete userFound.password;
+
     const data = {
       user: userFound,
-      token: token,
+      token: 'Bearer ' + token,
 
     }
 

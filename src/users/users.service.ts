@@ -8,15 +8,15 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class UsersService {
 
-  constructor(@InjectRepository(User) private usersRepository: Repository<User>) {}
+  constructor(@InjectRepository(User) private usersRepository: Repository<User>) { }
+
+  findAll() {
+    return this.usersRepository.find();
+  }
 
   create(user: CreateUserDto) {
     const newUser = this.usersRepository.create(user);
     return this.usersRepository.save(newUser);
-  }
-
-  findAll() {
-    return `This action returns all users`;
   }
 
   findOne(id: number) {

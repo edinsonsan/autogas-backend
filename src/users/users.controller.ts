@@ -4,13 +4,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtRolesGuard } from 'src/auth/jwt/jwt-roles.guard';
+import { HashRoles } from 'src/auth/jwt/hash-roles';
+import { JwtRoles } from 'src/auth/jwt/jwt-roles';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
 
-  @UseGuards(JwtAuthGuard)
+  @HashRoles(JwtRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -26,14 +30,16 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @HashRoles(JwtRoles.ADMIN, JwtRoles.CLIENT)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
 
 
-  @UseGuards(JwtAuthGuard)
+  @HashRoles(JwtRoles.ADMIN, JwtRoles.CLIENT)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
   @Post('upload/:id')
   @UseInterceptors(FileInterceptor('file'))
   updateWithImage(@UploadedFile(

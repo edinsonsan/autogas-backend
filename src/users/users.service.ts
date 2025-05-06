@@ -29,7 +29,7 @@ export class UsersService {
       relations: ['roles']
     });
     if (!userFound) {
-      return new HttpException('Usuario no Existe', HttpStatus.NOT_FOUND);
+      throw new HttpException('Usuario no Existe', HttpStatus.NOT_FOUND);
     }
     delete userFound.password;
     return userFound;
@@ -38,7 +38,7 @@ export class UsersService {
   async update(id: number, user: UpdateUserDto) {
     const userFound = await this.usersRepository.findOneBy({ id: id });
     if (!userFound) {
-      return new HttpException('Usuario no Existe', HttpStatus.NOT_FOUND);
+      throw new HttpException('Usuario no Existe', HttpStatus.NOT_FOUND);
     }
     const userUpdated = Object.assign(userFound, user);
     return this.usersRepository.save(userUpdated);
@@ -49,12 +49,12 @@ export class UsersService {
     console.log('URL: ' + url);
 
     if (url === undefined && url === null) {
-      return new HttpException('La imagen no se pudo guardar', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('La imagen no se pudo guardar', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     const userFound = await this.usersRepository.findOneBy({ id: id });
     if (!userFound) {
-      return new HttpException('Usuario no Existe', HttpStatus.NOT_FOUND);
+      throw new HttpException('Usuario no Existe', HttpStatus.NOT_FOUND);
     }
     user.image = url;
     const userUpdated = Object.assign(userFound, user);

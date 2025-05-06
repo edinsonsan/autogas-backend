@@ -27,23 +27,35 @@ export class AuthService {
     const emailExist = await this.usersRepository.findOneBy({ email: email });
     if (emailExist) {
       //409 CONFLICT
-      return new HttpException('El email ya Existe!', HttpStatus.CONFLICT);
+      throw new HttpException('El email ya Existe!', HttpStatus.CONFLICT);
     }
 
     const phoneExsist = await this.usersRepository.findOneBy({ phone: phone });
     if (phoneExsist) {
-      return new HttpException('El telefono ya Existe!', HttpStatus.CONFLICT);
+      throw new HttpException('El telefono ya Existe!', HttpStatus.CONFLICT);
     }
 
     const newUser = this.usersRepository.create(user);
 
-    const rolesIds = user.rolesId;
+    let rolesIds = [];
+
+    if (user.rolesId != undefined && user.rolesId != null) {
+      rolesIds = user.rolesId;
+    } else {
+      rolesIds.push('CLIENT');
+    }
+
     const roles = await this.rolesRepository.findBy({ id: In(rolesIds) });
     newUser.roles = roles;
 
     const userSave = await this.usersRepository.save(newUser);
+    const rolesString = userSave.roles.map((rol) => rol.id); //['ADMIN', 'CLIENT']
 
-    const payload = { id: userSave.id, name: userSave.name };
+    const payload = {
+      id: userSave.id,
+      name: userSave.name,
+      roles: rolesString,
+    };
     const token = this.jwtService.sign(payload);
 
     delete userSave.password;
@@ -65,15 +77,21 @@ export class AuthService {
       relations: ['roles'],
     });
     if (!userFound) {
-      return new HttpException('El email NO Existe!', HttpStatus.NOT_FOUND);
+      throw new HttpException('El email NO Existe!', HttpStatus.NOT_FOUND);
     }
 
     const isPasswordValid = await compare(password, userFound.password);
     if (!isPasswordValid) {
-      return new HttpException('La contraseña es incorrecta', HttpStatus.FORBIDDEN);
+      throw new HttpException('La contraseña es incorrecta', HttpStatus.FORBIDDEN);
     }
 
-    const payload = { id: userFound.id, name: userFound.name };
+    const rolesIds = userFound.roles.map((rol) => rol.id); //['ADMIN', 'CLIENT']
+
+    const payload = {
+      id: userFound.id,
+      name: userFound.name,
+      roles: rolesIds
+    };
     const token = this.jwtService.sign(payload);
 
     delete userFound.password;

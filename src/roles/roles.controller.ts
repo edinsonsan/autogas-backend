@@ -1,13 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRolDto } from './dto/create-rol.dto';
 import { UpdateRolDto } from './dto/update-rol.dto';
+import { HashRoles } from 'src/auth/jwt/hash-roles';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
+import { JwtRolesGuard } from 'src/auth/jwt/jwt-roles.guard';
+import { JwtRoles } from 'src/auth/jwt/jwt-roles';
 
 @Controller('roles')
 export class RolesController {
 
   constructor(private readonly rolesService: RolesService) { }
 
+  @HashRoles(JwtRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
   @Post()
   create(@Body() createRoleDto: CreateRolDto) {
     return this.rolesService.create(createRoleDto);

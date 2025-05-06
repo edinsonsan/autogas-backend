@@ -39,7 +39,7 @@ export class RegisterAuthDto {
     password: string;
 
     @IsArray()
-    @ArrayNotEmpty({ message: 'Debe seleccionar al menos un rol' })
+    @IsOptional()
     rolesId: string[];
 
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,12 +19,21 @@ export class UsersService {
     return this.usersRepository.save(newUser);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const userFound = await this.usersRepository.findOneBy({ id: id });
+    if (!userFound) {
+      return new HttpException('Usuario no Existe', HttpStatus.NOT_FOUND);
+    }
+    return userFound;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, user: UpdateUserDto) {
+    const userFound = await this.usersRepository.findOneBy({ id: id });
+    if (!userFound) {
+      return new HttpException('Usuario no Existe', HttpStatus.NOT_FOUND);
+    }
+    const userUpdated = Object.assign(userFound, user);
+    return this.usersRepository.save(userUpdated);
   }
 
   remove(id: number) {

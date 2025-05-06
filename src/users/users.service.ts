@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import storage = require('../utils/cloud_storage');
+import { Rol } from 'src/roles/entities/rol.entity';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +15,7 @@ export class UsersService {
   ) { }
 
   findAll() {
-    return this.usersRepository.find();
+    return this.usersRepository.find({ relations: ['roles'] });
   }
 
   create(user: CreateUserDto) {
@@ -23,7 +24,10 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    const userFound = await this.usersRepository.findOneBy({ id: id });
+    const userFound = await this.usersRepository.findOne({
+      where: { id: id },
+      relations: ['roles']
+    });
     if (!userFound) {
       return new HttpException('Usuario no Existe', HttpStatus.NOT_FOUND);
     }

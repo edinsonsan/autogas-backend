@@ -9,7 +9,9 @@ import storage = require('../utils/cloud_storage');
 @Injectable()
 export class UsersService {
 
-  constructor(@InjectRepository(User) private usersRepository: Repository<User>) { }
+  constructor(
+    @InjectRepository(User) private usersRepository: Repository<User>,
+  ) { }
 
   findAll() {
     return this.usersRepository.find();
@@ -25,6 +27,7 @@ export class UsersService {
     if (!userFound) {
       return new HttpException('Usuario no Existe', HttpStatus.NOT_FOUND);
     }
+    delete userFound.password;
     return userFound;
   }
 

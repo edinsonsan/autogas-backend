@@ -6,6 +6,8 @@ import {
     IsPhoneNumber,
     MinLength,
     Matches,
+    IsArray,
+    ArrayNotEmpty,
 } from 'class-validator';
 
 export class RegisterAuthDto {
@@ -35,5 +37,9 @@ export class RegisterAuthDto {
     })
     @IsNotEmpty({ message: 'La contraseña es obligatoria' })
     password: string;
+
+    @IsArray()
+    @ArrayNotEmpty({ message: 'Debe seleccionar al menos un rol' })
+    rolesId: string[];
 
 }

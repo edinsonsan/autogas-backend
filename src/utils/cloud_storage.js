@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Storage } = require('@google-cloud/storage');
 const { format } = require('util');
 const env = require('../config/env')
@@ -7,8 +8,12 @@ const uuid = uuidv4();
 
 
 const storage = new Storage({
-    projectId: "taxi-project-fb0fb",
-    keyFilename: './serviceAccountKey.json'
+    projectId: process.env.PROJECT_ID,
+    // keyFilename: './serviceAccountKey.json'
+    credentials: {
+        private_key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'), // La clave privada desde el archivo .env
+        client_email: process.env.CLIENT_EMAIL, // Usamos la variable de entorno
+    }
 });
 
 const bucket = storage.bucket("gs://taxi-project-fb0fb.appspot.com/");

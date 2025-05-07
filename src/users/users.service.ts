@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import storage = require('../utils/cloud_storage');
-import { Rol } from 'src/roles/entities/rol.entity';
 
 @Injectable()
 export class UsersService {

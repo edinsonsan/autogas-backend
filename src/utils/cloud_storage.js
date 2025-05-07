@@ -16,7 +16,7 @@ const storage = new Storage({
     }
 });
 
-const bucket = storage.bucket("gs://taxi-project-fb0fb.appspot.com/");
+const bucket = storage.bucket(process.env.FIREBASE_STORAGE_URL);
 
 /**
  * Subir el archivo a Firebase Storage
